@@ -17,8 +17,12 @@ use bevy::{
 };
 use winit::window::Icon;
 
+use crate::{actors::ActorsPlugin, physics::PhysicsPlugin};
+
+pub mod actors;
 #[cfg(feature = "dev")]
 pub mod dev;
+pub mod physics;
 
 mod app_constants;
 pub use self::app_constants::*;
@@ -46,8 +50,10 @@ fn main() {
 
     app.add_systems(Startup, set_window_icon_cursor);
 
+    app.add_plugins(ActorsPlugin);
     #[cfg(feature = "dev")]
     app.add_plugins(crate::dev::DevPlugin);
+    app.add_plugins(PhysicsPlugin);
 
     app.run();
 }

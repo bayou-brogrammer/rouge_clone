@@ -51,7 +51,7 @@ bevy = { version = "0.15", default-features = false, features = [
     "bevy_window",                          # Windowing layer
     "bevy_winit",                           # winit window and input backend
     # "bevy_image",                           # Load and access image data. Usually added by an image format
-    # "bevy_gizmos",                          # Adds support for rendering gizmos
+    "bevy_gizmos",                          # Adds support for rendering gizmos
     # "bevy_dev_tools",                       # Provides a collection of developer tools
     # "bevy_remote",                          # Enable the Bevy Remote Protocol
     # "spirv_shader_passthrough",             # Enable passthrough loading for SPIR-V shaders (Only supported on Vulkan, shader capabilities and extensions must agree with the platform implementation)
