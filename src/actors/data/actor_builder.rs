@@ -5,81 +5,108 @@ use crate::{
     physics::components::{Collider, ColliderSettings},
 };
 
-pub struct ActorEntities {
-    pub root: Entity,
-    pub model: Entity,
-    pub colliders: Entity,
+pub struct ActorPart {
+    pub name: String,
+    pub entity: Entity,
 }
 
-pub struct ActorBuilder {
+pub struct PartBuilder {
+    pub name: String,
+    pub transform: Transform,
+    pub image: Handle<Image>,
     pub color: Color,
-    pub position: (f32, f32),
+    pub size: Vec2,
+    pub anchor: Anchor,
+    pub collider: Collider,
 }
 
-impl ActorBuilder {
-    pub fn new(position: (f32, f32), color: impl Into<Color>) -> Self {
+impl PartBuilder {
+    pub fn new(name: impl ToString, image: Handle<Image>) -> Self {
         Self {
-            position,
-            color: color.into(),
+            name: name.to_string(),
+            transform: Transform::IDENTITY,
+            image,
+            color: Color::default(),
+            size: Vec2::splat(32.0),
+            anchor: Anchor::Center,
+            collider: Collider::Circle(16.0),
         }
     }
 
+    pub fn set_color(&mut self, color: Color) {
+        self.color = color;
+    }
+
+    pub fn set_size(&mut self, size: Vec2) {
+        self.size = size;
+    }
+
+    pub fn set_anchor(&mut self, anchor: Anchor) {
+        self.anchor = anchor;
+    }
+
+    pub fn set_collider(&mut self, collider: Collider) {
+        self.collider = collider;
+    }
+
+    pub fn build(&self, commands: &mut Commands) -> Entity {
+        commands
+            .spawn((
+                Name::new(self.name.clone()),
+                self.transform,
+                Sprite {
+                    image: self.image.clone(),
+                    color: self.color,
+                    custom_size: Some(self.size),
+                    anchor: self.anchor,
+                    ..Default::default()
+                },
+                self.collider,
+            ))
+            .id()
+    }
+}
+
+pub struct ActorBuilder {
+    pub transform: Transform,
+    pub parts: Vec<PartBuilder>,
+}
+
+impl ActorBuilder {
+    pub fn new(transform: Transform) -> Self {
+        Self {
+            transform,
+            parts: Vec::new(),
+        }
+    }
+
+    pub fn add_part(&mut self, part: PartBuilder) {
+        self.parts.push(part);
+    }
+
     /// Build a heirarchy of entities representing the actor
-    /// TODO: Maybe the Model images should hold their own physical colliders? This would allow the graphics
-    /// and collider to share the same transform guarenteeing that they are always in sync
-    pub fn build(&self, commands: &mut Commands, asset_server: &AssetServer) -> ActorEntities {
+    pub fn build(&self, commands: &mut Commands) {
         // Build root entity
         let root = commands
             .spawn((
                 Name::new("Actor"),
                 Actor,
-                Transform::from_xyz(self.position.0, self.position.1, 0.0),
-            ))
-            .id();
-
-        // Create a child entity which will hold the graphic model/sprite
-        let model = commands
-            .spawn((
-                Name::new("Model"),
-                Sprite {
-                    image: asset_server.load("circle_32x32.png"),
-                    // texture_atlas: todo!(),
-                    color: self.color,
-                    custom_size: Some(Vec2::splat(32.0)),
-                    anchor: Anchor::Center,
-                    ..Default::default()
-                },
-            ))
-            .id();
-
-        // Create a child which will hold the colliders
-        let colliders = commands
-            .spawn((Name::new("Colliders"), Transform::IDENTITY))
-            .id();
-
-        let physical_collider = commands
-            .spawn((Name::new("Physical Collider"), Collider::circle(16.0)))
-            .id();
-
-        let interact_collider = commands
-            .spawn((
-                Name::new("Interact Collider"),
+                self.transform,
                 Collider::circle(32.0),
                 ColliderSettings { signal: true },
             ))
             .id();
 
-        commands
-            .entity(colliders)
-            .add_child(physical_collider)
-            .add_child(interact_collider);
+        // Create a child entity which will hold the graphic model/sprite
+        let model = commands
+            .spawn((Name::new("Model"), Transform::IDENTITY))
+            .id();
 
-        commands.entity(root).add_child(model).add_child(colliders);
-
-        ActorEntities {
-            root,
-            model,
-            colliders,
+        for builder in self.parts.iter() {
+            let part = builder.build(commands);
+            commands.entity(model).add_child(part);
         }
+
+        commands.entity(root).add_child(model);
     }
 }
