@@ -1,8 +1,8 @@
 use bevy::{prelude::*, sprite::Anchor};
 
 use crate::{
-    actors::components::Actor,
-    physics::components::{Collider, Sensor, Velocity},
+    actors::components::{Actor, Player},
+    physics::components::{Collider, DragCurve, Sensor, Velocity},
 };
 
 pub struct ActorPart {
@@ -70,7 +70,9 @@ impl PartBuilder {
 pub struct ActorBuilder {
     pub transform: Transform,
     pub velocity: Velocity,
+    pub drag: DragCurve,
     pub parts: Vec<PartBuilder>,
+    pub is_player: bool,
 }
 
 impl ActorBuilder {
@@ -79,6 +81,8 @@ impl ActorBuilder {
             transform,
             parts: Vec::new(),
             velocity: Velocity::IDENTITY,
+            is_player: false,
+            drag: DragCurve::default(),
         }
     }
 
@@ -88,6 +92,14 @@ impl ActorBuilder {
 
     pub fn set_velocity(&mut self, velocity: Velocity) {
         self.velocity = velocity;
+    }
+
+    pub fn set_drag(&mut self, drag: DragCurve) {
+        self.drag = drag;
+    }
+
+    pub fn set_player(&mut self, is_player: bool) {
+        self.is_player = is_player;
     }
 
     /// Build a heirarchy of entities representing the actor
@@ -101,8 +113,13 @@ impl ActorBuilder {
                 Collider::circle(32.0),
                 Sensor,
                 self.velocity,
+                self.drag.clone(),
             ))
             .id();
+
+        if self.is_player {
+            commands.entity(root).insert(Player);
+        }
 
         // Create a child entity which will hold the graphic model/sprite
         let model = commands

@@ -18,6 +18,6 @@ impl Plugin for DevPlugin {
         app.add_systems(Startup, dev_startup);
         app.add_systems(Update, dev_update);
         app.add_systems(Update, dev_input);
-        app.add_systems(Update, draw_colliders);
+        app.add_systems(PostUpdate, draw_colliders);
     }
 }

@@ -134,9 +134,11 @@ bevy_asset_loader = { version = "0.22" }
 # Inspector plugin for the bevy game engine
 bevy-inspector-egui = { version = "0.29", optional = true }
 # A macro to generate structures which behave like bitflags.
-bitflags = "2.8"
+bitflags = "2.9"
 # A tiny mid-level library that provides platform-specific standard locations of directories
 directories = "6"
+# Provides several wrapper types for Ord and Eq implementations on f64 and friends.
+ordered-float = "5"
 # Random number generators and other randomness functionality.
 rand = "0.9"
 # Selected PCG random number generators
