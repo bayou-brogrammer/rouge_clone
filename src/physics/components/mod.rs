@@ -1,8 +1,8 @@
-mod collider_settings;
-pub use self::collider_settings::*;
-
 mod collider;
 pub use self::collider::*;
+
+mod sensor;
+pub use self::sensor::*;
 
 mod velocity;
 pub use self::velocity::*;

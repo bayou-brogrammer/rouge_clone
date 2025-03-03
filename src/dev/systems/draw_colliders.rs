@@ -1,22 +1,18 @@
 use bevy::prelude::*;
 
-use crate::physics::components::{Collider, ColliderSettings};
+use crate::physics::components::{Collider, Sensor};
 
 const PHYSICAL_COLOR: Srgba = Srgba::new(0.0, 1.0, 0.0, 1.0);
 const SIGNAL_COLOR: Srgba = Srgba::new(0.0, 0.0, 1.0, 1.0);
 
 /// Draw all colliders using gizmos.
 pub fn draw_colliders(
-    q_colliders: Query<(&GlobalTransform, &Collider, Option<&ColliderSettings>)>,
+    q_colliders: Query<(&GlobalTransform, &Collider, Option<&Sensor>)>,
     mut gizmos: Gizmos,
 ) {
     for (transform, collider, maybe_settings) in q_colliders.iter() {
-        let srgba = if let Some(settings) = maybe_settings {
-            if settings.signal {
-                SIGNAL_COLOR
-            } else {
-                PHYSICAL_COLOR
-            }
+        let srgba = if maybe_settings.is_some() {
+            SIGNAL_COLOR
         } else {
             PHYSICAL_COLOR
         };

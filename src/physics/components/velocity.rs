@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-#[derive(Component, Reflect, Clone, Copy,Deref, DerefMut)]
+#[derive(Component, Reflect, Clone, Copy, Deref, DerefMut)]
 #[reflect(Component)]
 #[require(Transform)]
 pub struct Velocity(Vec2);

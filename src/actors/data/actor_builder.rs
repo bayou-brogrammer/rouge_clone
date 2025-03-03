@@ -2,7 +2,7 @@ use bevy::{prelude::*, sprite::Anchor};
 
 use crate::{
     actors::components::Actor,
-    physics::components::{Collider, ColliderSettings, Velocity},
+    physics::components::{Collider, Sensor, Velocity},
 };
 
 pub struct ActorPart {
@@ -101,7 +101,7 @@ impl ActorBuilder {
                 Actor,
                 self.transform,
                 Collider::circle(32.0),
-                ColliderSettings { signal: true },
+                Sensor,
                 self.velocity,
             ))
             .id();
