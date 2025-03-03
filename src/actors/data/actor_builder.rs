@@ -18,7 +18,6 @@ pub struct PartBuilder {
     pub size: Vec2,
     pub anchor: Anchor,
     pub collider: Collider,
-    pub velocity: Velocity,
 }
 
 impl PartBuilder {
@@ -31,7 +30,6 @@ impl PartBuilder {
             size: Vec2::splat(32.0),
             anchor: Anchor::Center,
             collider: Collider::Circle(16.0),
-            velocity: Velocity::new(Vec2::ZERO),
         }
     }
 
@@ -49,10 +47,6 @@ impl PartBuilder {
 
     pub fn set_collider(&mut self, collider: Collider) {
         self.collider = collider;
-    }
-
-    pub fn set_velocity(&mut self, velocity: Velocity) {
-        self.velocity = velocity;
     }
 
     pub fn build(&self, commands: &mut Commands) -> Entity {
@@ -90,6 +84,10 @@ impl ActorBuilder {
 
     pub fn add_part(&mut self, part: PartBuilder) {
         self.parts.push(part);
+    }
+
+    pub fn set_velocity(&mut self, velocity: Velocity) {
+        self.velocity = velocity;
     }
 
     /// Build a heirarchy of entities representing the actor

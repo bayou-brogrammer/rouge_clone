@@ -15,8 +15,8 @@ pub fn dev_startup(mut commands: Commands, asset_server: Res<AssetServer>) {
     body.set_size(Vec2::splat(32.0));
     body.set_collider(Collider::Circle(16.0));
     body.set_anchor(Anchor::Center);
-    body.set_velocity(Velocity::IDENTITY);
     player_builder.add_part(body);
+    player_builder.set_velocity(Velocity::IDENTITY);
 
     player_builder.build(&mut commands);
 }
