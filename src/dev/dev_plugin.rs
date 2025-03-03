@@ -4,7 +4,7 @@ use bevy::{
 };
 use bevy_inspector_egui::{quick::WorldInspectorPlugin, DefaultInspectorConfigPlugin};
 
-use crate::dev::systems::{dev_startup, dev_update, draw_colliders};
+use crate::dev::systems::{dev_startup, dev_update, draw_colliders, dev_input};
 
 pub struct DevPlugin;
 impl Plugin for DevPlugin {
@@ -17,6 +17,7 @@ impl Plugin for DevPlugin {
 
         app.add_systems(Startup, dev_startup);
         app.add_systems(Update, dev_update);
+        app.add_systems(Update, dev_input);
         app.add_systems(Update, draw_colliders);
     }
 }

@@ -2,7 +2,7 @@ use bevy::{prelude::*, sprite::Anchor};
 
 use crate::{
     actors::components::Actor,
-    physics::components::{Collider, ColliderSettings},
+    physics::components::{Collider, ColliderSettings, Velocity},
 };
 
 pub struct ActorPart {
@@ -18,18 +18,20 @@ pub struct PartBuilder {
     pub size: Vec2,
     pub anchor: Anchor,
     pub collider: Collider,
+    pub velocity: Velocity,
 }
 
 impl PartBuilder {
     pub fn new(name: impl ToString, image: Handle<Image>) -> Self {
         Self {
+            image,
             name: name.to_string(),
             transform: Transform::IDENTITY,
-            image,
             color: Color::default(),
             size: Vec2::splat(32.0),
             anchor: Anchor::Center,
             collider: Collider::Circle(16.0),
+            velocity: Velocity::new(Vec2::ZERO),
         }
     }
 
@@ -47,6 +49,10 @@ impl PartBuilder {
 
     pub fn set_collider(&mut self, collider: Collider) {
         self.collider = collider;
+    }
+
+    pub fn set_velocity(&mut self, velocity: Velocity) {
+        self.velocity = velocity;
     }
 
     pub fn build(&self, commands: &mut Commands) -> Entity {
@@ -69,6 +75,7 @@ impl PartBuilder {
 
 pub struct ActorBuilder {
     pub transform: Transform,
+    pub velocity: Velocity,
     pub parts: Vec<PartBuilder>,
 }
 
@@ -77,6 +84,7 @@ impl ActorBuilder {
         Self {
             transform,
             parts: Vec::new(),
+            velocity: Velocity::IDENTITY,
         }
     }
 
@@ -94,6 +102,7 @@ impl ActorBuilder {
                 self.transform,
                 Collider::circle(32.0),
                 ColliderSettings { signal: true },
+                self.velocity,
             ))
             .id();
 
